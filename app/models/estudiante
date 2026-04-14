@@ -1,0 +1,16 @@
+from typing import Optional
+from database import Base
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Text, Boolean, Integer, Date, CheckConstraint, ForeignKey
+from datetime import datetime, date
+
+class Estudiante(Base):
+    __tablename__="estudiante"
+    id_estudiante: Mapped[str]=mapped_column(String(60),primary_key=True)
+    correo_usuario:Mapped[str]=mapped_column(String(120),nullable=False,unique=True)
+    pass_usuario:Mapped[str]=mapped_column(String(120),nullable=False)
+    nombre_estudiante:Mapped[str]=mapped_column(String(60),nullable=False)
+    fecha_registro:Mapped[date]=mapped_column(Date,nullable=False)
+    estado_estudiante:Mapped[date]=mapped_column(Boolean,nullable=False)
+
+
