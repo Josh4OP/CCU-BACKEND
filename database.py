@@ -15,7 +15,7 @@ url = URL.create(
     password=os.getenv("db_password"),
     host=os.getenv("db_host"),
     database=os.getenv("db_name"),
-    port=int(os.getenv("db_port", 5432))
+    port=int(os.getenv("db_port") or 5432)
 )
 
 
@@ -41,5 +41,4 @@ def get_db():#Crea sesiones en el database
     finally:
         db.close()
         print("Conexión cerrada")
-
 
