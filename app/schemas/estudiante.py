@@ -30,3 +30,8 @@ class EstudianteOut(BaseModel):
 
     class Config:
         from_attributes = True   # 👈 necesario para SQLAlchemy
+
+class CambiarPassword(BaseModel):
+    correo: EmailStr
+    password_actual: str
+    password_nueva: str

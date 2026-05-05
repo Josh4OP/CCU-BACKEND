@@ -10,6 +10,8 @@ from app.utils.security import verify_password
 from app.utils.deps import get_current_user
 from app.schemas.estudiante import *
 import os, shutil
+from app.schemas.estudiante import CambiarPassword  # schema nuevo
+
 
 router = APIRouter(prefix="/estudiantes", tags=["Estudiantes"])
 
@@ -106,3 +108,14 @@ def upload_pic(id: int, file: UploadFile = File(...), db: Session = Depends(get_
     db.commit()
 
     return {"message": "Foto actualizada", "url": estudiante.profile_pic}
+
+@router.put("/change-password")
+def change_password(data: CambiarPassword, db: Session = Depends(get_db)):
+    estudiante = db.query(Estudiante).filter(
+        Estudiante.correo_usuario == data.correo
+    ).first()
+    if not estudiante or not verify_password(data.password_actual, estudiante.pass_usuario):
+        return JSONResponse(status_code=401, content={"message": "Contraseña actual incorrecta"})
+    estudiante.pass_usuario = hash_password(data.password_nueva)
+    db.commit()
+    return {"message": "Contraseña actualizada correctamente."}
