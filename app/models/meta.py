@@ -18,7 +18,7 @@ class Meta(Base):
         ForeignKey("materia.id_materia")
     )
 
-    id_estudiante: Mapped[str] = mapped_column(
+    id_estudiante: Mapped[int] = mapped_column(
         ForeignKey("estudiante.id_estudiante")
     )
 

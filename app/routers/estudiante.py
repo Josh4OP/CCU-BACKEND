@@ -18,7 +18,7 @@ router = APIRouter(prefix="/estudiantes", tags=["Estudiantes"])
 UPLOAD_DIR = os.path.join("uploads", "profile_pics")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# ✅ REGISTRO
+#  REGISTRO
 @router.post("/register", response_model=EstudianteOut)
 def register(estudiante: EstudianteCreate, db: Session = Depends(get_db)):
 
@@ -42,7 +42,7 @@ def register(estudiante: EstudianteCreate, db: Session = Depends(get_db)):
     return nuevo
 
 
-# ✅ LOGIN
+#  LOGIN
 @router.post("/login")
 def login(data: EstudianteLogin, db: Session = Depends(get_db)):
 
@@ -65,13 +65,13 @@ def login(data: EstudianteLogin, db: Session = Depends(get_db)):
         "token_type": "bearer"
     }
 
-# ✅ LISTAR
+#  LISTAR
 @router.get("/", response_model=list[EstudianteOut])
 def listar(db: Session = Depends(get_db)):
     return db.query(Estudiante).all()
 
 
-# ✅ OBTENER
+#  OBTENER
 @router.get("/{id}", response_model=EstudianteOut)
 def obtener(id: int, db: Session = Depends(get_db)):
     estudiante = db.query(Estudiante).filter(
@@ -87,7 +87,7 @@ def obtener(id: int, db: Session = Depends(get_db)):
 def perfil(usuario = Depends(get_current_user)):
     return usuario
 
-# ✅ SUBIR FOTO
+#  SUBIR FOTO
 @router.post("/upload-profile-pic/{id}")
 def upload_pic(id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
 
@@ -119,3 +119,20 @@ def change_password(data: CambiarPassword, db: Session = Depends(get_db)):
     estudiante.pass_usuario = hash_password(data.password_nueva)
     db.commit()
     return {"message": "Contraseña actualizada correctamente."}
+
+
+#  CAMBIAR ESTADO (Admin)
+@router.patch("/{id}/estado")
+def cambiar_estado(id: int, db: Session = Depends(get_db)):
+    estudiante = db.query(Estudiante).filter(
+        Estudiante.id_estudiante == id
+    ).first()
+    if not estudiante:
+        return JSONResponse(status_code=404, content={"message": "Estudiante no encontrado"})
+    
+    estudiante.estado_estudiante = not estudiante.estado_estudiante
+    db.commit()
+    db.refresh(estudiante)
+
+    estado_texto = "activado" if estudiante.estado_estudiante else "desactivado"
+    return {"message": f"Estudiante {estado_texto} correctamente", "estado": estudiante.estado_estudiante}

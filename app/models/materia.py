@@ -16,9 +16,7 @@ class Materia(Base):
 
     id_materia: Mapped[str] = mapped_column(String(60), primary_key=True)
 
-    id_estudiante: Mapped[str] = mapped_column(
-        ForeignKey("estudiante.id_estudiante")
-    )
+    id_estudiante: Mapped[int] = mapped_column(ForeignKey("estudiante.id_estudiante"))
 
     nombre_materia: Mapped[str] = mapped_column(String(100), nullable=False)
 
@@ -29,6 +27,9 @@ class Materia(Base):
     semestre_materia: Mapped[int]
 
     estado_materia: Mapped[bool] = mapped_column(Boolean)
+
+
+
 
     estudiante: Mapped["Estudiante"] = relationship(back_populates="materias")
 
