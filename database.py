@@ -1,31 +1,18 @@
-from sqlalchemy import create_engine, text
-from sqlalchemy.engine import URL
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
-
-
 from dotenv import load_dotenv
 import os
-# Load environment variables from .env
+
 load_dotenv()
 
+DATABASE_URL = os.getenv("DATABASE_URL", "")
 
-url = URL.create(
-    drivername="postgresql+psycopg2",
-    username=os.getenv("db_user"),
-    password=os.getenv("db_password"),
-    host=os.getenv("db_host"),
-    database=os.getenv("db_name"),
-    port=int(os.getenv("db_port") or 5432)
-)
+# Render a veces usa "postgres://" en vez de "postgresql://"
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
+engine = create_engine(DATABASE_URL)
 
-# Create the SQLAlchemy engine
-engine = create_engine(url)
-# If using Transaction Pooler or Session Pooler, we want to ensure we disable SQLAlchemy client side pooling -
-# https://docs.sqlalchemy.org/en/20/core/pooling.html#switching-pool-implementations
-# engine = create_engine(DATABASE_URL, poolclass=NullPool)
-
-# Test the connection
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 class Base(DeclarativeBase):
@@ -33,7 +20,7 @@ class Base(DeclarativeBase):
 
 import app.models
 
-def get_db():#Crea sesiones en el database
+def get_db():
     db = SessionLocal()
     try:
         print("Conexión abierta")
@@ -41,4 +28,3 @@ def get_db():#Crea sesiones en el database
     finally:
         db.close()
         print("Conexión cerrada")
-
